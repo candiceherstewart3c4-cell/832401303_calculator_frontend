@@ -4,6 +4,8 @@ HTML/CSS/JavaScript frontend. Requires a modern browser and any static HTTP serv
 
 Course: EE308FZ. FZU student ID: 832401303. MUID: 241215237.
 
+Companion repository: [Clover Calc Backend](https://github.com/candiceherstewart3c4-cell/832401303_calculator_backend).
+
 ## Install and start independently
 
 Requires Node.js 22.13+ for the included preview server. There are no dependencies to install and no build step. From this frontend repository run:
@@ -54,6 +56,8 @@ The functional grouping and clear separation of numeric/scientific keys referenc
 At 1000px and wider, calculation and database history appear side by side; the history list scrolls independently. Scientific keys and history start expanded on wide screens. Narrow screens use one column and initially collapse these panels; both remain available through their buttons. Crossing the breakpoint restores the layout defaults, without changing the expression or angle unit. The five-column numeric keypad retains every original action. Square, square root, reciprocal and Undo live in the quick-function row. Calculation requests and database behavior are unchanged.
 
 ## Conversion tools and history
+
+**Number display:** Automatic uses scientific notation for absolute values at least 10^9 or nonzero values below 10^-6. Decimal places offers Auto (no extra rounding) or 0–10 fixed decimal places, retaining trailing zeros. Ties round away from zero using decimal-text formatting; scientific notation rounds the coefficient and normalizes carries. Full values bypasses rounding and temporarily disables Decimal places. These options apply to arithmetic, units and history, never to base-conversion results. Copy actions copy full values; Ans continues to use the backend result. Display settings do not change stored data, input syntax or numerical precision. They reset to Auto on page reload.
 
 Use Calculate / Number bases / Unit converter to switch working surfaces. Base conversion supports signed integers in bases 2, 8, 10, 16 (up to 128 input digits, no 0x prefixes or fractional values). Units cover metric length (mm/cm/m/km), mass (mg/g/kg), and temperature (C/F/K). Convert & save sends inputs to the backend; it does not calculate in the browser. Invalid conversions are not saved. Clicking a conversion in history restores its tool, value and units without automatically running it.
 

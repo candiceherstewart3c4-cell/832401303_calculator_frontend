@@ -36,6 +36,10 @@
         <button type="button" data-mode="base" aria-pressed="false" aria-controls="conversionPane">Number bases</button>
         <button type="button" data-mode="unit" aria-pressed="false" aria-controls="conversionPane">Unit converter</button>
       </div>
+      <div class="number-format-toolbar">
+        <div><label for="numberFormat">Number display</label><select id="numberFormat"><option value="auto">Automatic</option><option value="full">Full values</option></select></div>
+        <div><label for="decimalPlaces">Decimal places</label><select id="decimalPlaces"><option value="auto">Auto</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></div>
+      </div>
       <div id="calculatorPane">
       <div class="display">
         <div class="display-toolbar"><label for="expressionInput">Expression</label><button class="copy-button" id="copyButton" type="button" aria-label="Copy result" disabled>Copy result</button></div>
@@ -102,7 +106,7 @@
             <button type="submit" class="convert-submit">Convert &amp; save</button>
           </fieldset>
         </form>
-        <div class="conversion-answer"><span>Result</span><output id="conversionOutput" aria-live="polite">—</output><p id="conversionStatus" role="status">Enter a value to convert.</p></div>
+        <div class="conversion-answer"><div class="conversion-result-toolbar"><span>Result</span><button class="copy-button" id="copyConversion" type="button" disabled>Copy full result</button></div><output id="conversionOutput" aria-live="polite">—</output><p id="conversionStatus" role="status">Enter a value to convert.</p></div>
         <p class="conversion-help">Successful conversions are saved in History. Click a saved conversion to restore its inputs.</p>
       </div>
     </section>
@@ -118,12 +122,14 @@
     </aside>
     <details class="usage-notes">
       <summary>How it works</summary>
+      <p>Automatic display uses scientific notation for absolute values at least 1 billion or nonzero values below 0.000001. Decimal places offers Auto (no extra rounding) or 0–10 fixed decimal places; in scientific notation it rounds the coefficient. Ties round away from zero. Full values ignores this setting and expands the full returned decimal value. Number-base results are never reformatted. Copy uses the full returned value, not the rounded display. Formatting does not change backend calculations, saved records, Ans or numerical precision.</p>
       <p>Type or paste an expression. Buttons insert at the cursor; select text to replace it. Functions wrap the selected part, or the whole expression. Ans inserts the last successful result. Undo restores an edit. Percent divides by 100. Press Enter to calculate and Esc to clear. History searches the entire database, with 10 records per page. The star saves a favorite in the database; favorites remain part of history and are also removed by Clear history. All visitors share history and favorites. Times use your local timezone. Arithmetic and unit conversion use up to 15 significant digits; integer base conversion is exact.</p>
       <p>Scientific adds sin, cos, tan, log (base 10), ln, powers and π (type pi). SHIFT selects the gold secondary functions for your next function key: inverse trig, 10ˣ, eˣ and e. Type asin, acos, atan, exp10 or exp for these functions. DEG uses degrees; RAD uses radians, including inverse-trig results. Try sin(30) in DEG or sin(pi/6) in RAD. A function inserts at an empty input or after an operator; otherwise it wraps the selection or expression. History recall restores the saved angle unit. Use * for multiplication, such as 2*pi. Powers use ^: 2^3 = 8, -2^2 = -4 and 2^3^2 = 512. All calculations run on the backend.</p>
     </details>
   </main>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="scripts/config.js"></script>
+  <script src="scripts/number-format.js"></script>
   <script src="scripts/calculator.js"></script>
 </body>
 </html>

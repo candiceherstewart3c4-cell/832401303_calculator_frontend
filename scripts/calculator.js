@@ -25,6 +25,27 @@
   const unitCategory = document.querySelector('#unitCategory');
   const conversionStatus = document.querySelector('#conversionStatus');
   const conversionOutput = document.querySelector('#conversionOutput');
+  const numberFormat = document.querySelector('#numberFormat');
+  const decimalPlaces = document.querySelector('#decimalPlaces');
+  const copyConversion = document.querySelector('#copyConversion');
+  let displayedResult = null;
+  let conversionResult = null;
+  let conversionKind = 'unit';
+  const formatted = (value, kind = 'calculate') => window.CloverNumberFormat.formatResult(value, { full: numberFormat.value === 'full', kind, decimalPlaces: decimalPlaces.value === 'auto' ? 'auto' : Number(decimalPlaces.value) });
+  function renderResults() {
+    if (displayedResult !== null) {
+      display.textContent = formatted(displayedResult);
+      display.classList.toggle('compact', display.textContent.length > 10);
+    }
+    if (conversionResult !== null) conversionOutput.textContent = formatted(conversionResult, conversionKind);
+  }
+  function updateNumberDisplay() {
+    decimalPlaces.disabled = numberFormat.value === 'full';
+    renderResults();
+    renderHistory();
+  }
+  numberFormat.addEventListener('change', updateNumberDisplay);
+  decimalPlaces.addEventListener('change', updateNumberDisplay);
   // Labels only: conversion factors and arithmetic are exclusively on the server.
   const unitLabels = {
     length: { mm: 'Millimetres (mm)', cm: 'Centimetres (cm)', m: 'Metres (m)', km: 'Kilometres (km)' },
@@ -32,6 +53,8 @@
     temperature: { C: 'Celsius (°C)', F: 'Fahrenheit (°F)', K: 'Kelvin (K)' }
   };
   function conversionChanged() {
+    conversionResult = null;
+    copyConversion.disabled = true;
     conversionOutput.textContent = '—';
     conversionStatus.textContent = 'Press Convert & save to calculate.';
     conversionValue.removeAttribute('aria-invalid');
@@ -53,7 +76,8 @@
     if (mode === 'calculate') return;
     document.querySelector('#categoryField').hidden = mode === 'base';
     document.querySelector('#conversionTitle').textContent = mode === 'base' ? 'Number bases' : 'Unit converter';
-    document.querySelector('#conversionHelp').textContent = mode === 'base' ? 'Signed integers, up to 128 digits. No fractions or prefixes such as 0x.' : 'Length, mass and temperature. Enter a decimal number; results use up to 15 significant digits.';
+    document.querySelector('#conversionHelp').hidden = mode !== 'base';
+    document.querySelector('#conversionHelp').textContent = mode === 'base' ? 'Signed integers, up to 128 digits. No fractions or prefixes such as 0x.' : '';
     conversionValue.value = mode === 'base' ? '255' : '1';
     populateUnits();
   }
@@ -67,11 +91,16 @@
     if (activeMode === 'unit') request.category = unitCategory.value;
     busy = true;
     document.querySelector('#conversionFields').disabled = true;
+    conversionResult = null;
+    copyConversion.disabled = true;
     conversionOutput.textContent = '—';
     conversionStatus.textContent = 'Converting…';
     try {
       const data = await api('/convert', { method: 'POST', body: JSON.stringify(request) });
-      conversionOutput.textContent = data.resultLabel;
+      conversionResult = data.resultLabel;
+      conversionKind = request.kind;
+      renderResults();
+      copyConversion.disabled = false;
       conversionStatus.textContent = `${data.expression} · Saved to history`;
       conversionValue.removeAttribute('aria-invalid');
       historyPage = 1;
@@ -239,7 +268,8 @@
       const equation = document.createElement('span');
       equation.textContent = record.expression;
       const result = document.createElement('strong');
-      result.textContent = `= ${record.result}`;
+      result.textContent = `= ${formatted(record.result, record.kind)}`;
+      result.title = String(record.result);
       recall.append(equation, result);
       recall.addEventListener('click', () => {
         if (busy) return;
@@ -292,6 +322,7 @@
     document.querySelector('.display').setAttribute('aria-busy', 'true');
     document.querySelector('.display').classList.remove('has-error');
     copyButton.disabled = true;
+    displayedResult = null;
     input.disabled = true;
     document.querySelectorAll('#keypad button, #scienceKeys button, #editKeys button, [name="angleMode"]').forEach(button => { button.disabled = true; });
     status.textContent = 'Calculating…';
@@ -299,11 +330,11 @@
       const data = await api('/calculate', {
         method: 'POST', body: JSON.stringify({ expression: input.value, angleMode: angleMode() })
       });
-      display.textContent = String(data.result);
+      displayedResult = String(data.result);
       lastResult = String(data.result);
+      renderResults();
       copyButton.disabled = false;
       input.removeAttribute('aria-invalid');
-      display.classList.toggle('compact', String(data.result).length > 10);
       status.textContent = `${data.expression} = · ${data.angleMode.toUpperCase()}`;
       historyPage = 1;
       try { await loadHistory(); } catch (error) { notify(`Result saved; history refresh failed: ${error.message}`); }
@@ -324,7 +355,7 @@
   function action(name, value) {
     if (busy) return;
     if (name === 'equals') return calculate();
-    if (name === 'clear') { setShift(false); replaceSelection('', 0, input.value.length); display.textContent = '0'; copyButton.disabled = true; }
+    if (name === 'clear') { setShift(false); replaceSelection('', 0, input.value.length); displayedResult = null; display.textContent = '0'; copyButton.disabled = true; }
     else if (name === 'undo') {
       if (!edits.length) return;
       input.value = edits.pop();
@@ -417,8 +448,13 @@
     catch (error) { notify(error.message); }
   });
   document.querySelector('#copyButton').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(display.textContent); notify('Result copied.'); }
-    catch { notify('Clipboard unavailable. Select the result to copy.'); }
+    try { await navigator.clipboard.writeText(window.CloverNumberFormat.formatResult(lastResult, { full: true })); notify('Full result copied.'); }
+    catch { notify('Clipboard unavailable. Choose Full values, then select the result to copy.'); }
+  });
+  copyConversion.addEventListener('click', async () => {
+    if (conversionResult === null) return;
+    try { await navigator.clipboard.writeText(window.CloverNumberFormat.formatResult(conversionResult, { full: true, kind: conversionKind })); notify('Full result copied.'); }
+    catch { notify('Clipboard unavailable. Choose Full values, then select the result to copy.'); }
   });
   function refreshFilter() {
     clearTimeout(historyTimer);

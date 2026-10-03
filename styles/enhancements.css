@@ -1,4 +1,12 @@
 /* Study workspace: preserve the Irish palette and improve hierarchy. */
+.number-format-toolbar, .conversion-result-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.number-format-toolbar { margin: 12px 0; color: var(--muted); font-size: .875rem; }
+.number-format-toolbar > div { display: flex; align-items: center; gap: 8px; }
+.number-format-toolbar select:disabled { opacity: .5; cursor: not-allowed; }
+.number-format-toolbar select { font: inherit; color: var(--ink); background: #102b21; border: 1px solid var(--line); border-radius: 8px; padding: 8px; min-height: 40px; }
+.number-format-toolbar select:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.conversion-result-toolbar { justify-content: space-between; }
+#display, #conversionOutput, .history-recall strong { overflow-wrap: anywhere; min-width: 0; }
 .workspace-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; color: var(--muted); font-size: .875rem; }
 .workspace-toolbar button { border: 1px solid var(--line); border-radius: 30px; padding: 8px 13px; color: var(--ink); background: #ffffff08; min-height: 40px; }
 .workspace-toolbar button[aria-pressed="true"] { background: #c6dfa1; color: #152719; }

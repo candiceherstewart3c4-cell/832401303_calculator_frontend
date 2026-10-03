@@ -31,6 +31,9 @@ test('standalone frontend serves the page and supports a separately hosted API',
     assert.equal(config.status, 200);
     assert.equal(await config.text(), 'window.CALCULATOR_API_URL = "https://api.example.invalid/api";');
     assert.equal((await fetch(`${base}/styles/main.css`)).status, 200);
+    const formatter = await fetch(`${base}/scripts/number-format.js`);
+    assert.equal(formatter.status, 200);
+    assert.match(await formatter.text(), /CloverNumberFormat/);
     assert.equal((await fetch(`${base}/%2e%2e%2fbackend%2fsrc%2fserver.js`)).status, 403);
     assert.equal((await fetch(`${base}/.git/HEAD`)).status, 403);
     assert.equal((await fetch(`${base}/not-found`)).status, 404);
