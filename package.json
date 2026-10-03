@@ -1,0 +1,13 @@
+{
+  "name": "clover-calc-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HTTP/JSON calculator client with a standalone static preview server",
+  "scripts": {
+    "start": "node serve.cjs",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}
