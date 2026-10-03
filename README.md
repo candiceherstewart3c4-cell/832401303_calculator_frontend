@@ -6,6 +6,19 @@ Course: EE308FZ. FZU student ID: 832401303. MUID: 241215237.
 
 Companion repository: [Clover Calc Backend](https://github.com/candiceherstewart3c4-cell/832401303_calculator_backend).
 
+## Live demonstration
+
+- [Open the calculator](http://117.50.199.166:3000)
+- [Backend health check](http://117.50.199.166:3000/api/health)
+
+Verified on 2026-10-03: the public homepage returned HTTP 200 and the health endpoint returned `{"success":true}`. Manual browser use confirmed calculation and history retention after refreshing the page.
+
+The current deployment runs on Ubuntu 22.04.4 LTS with Node.js 24.21.0 and PM2. The backend serves this frontend's static files and the `/api` routes from the same origin. The source remains in two independent repositories, and calculation/conversion still happens exclusively in the backend. Keep `backendApiUrl` empty for this same-origin deployment; GitHub Pages is not required.
+
+PM2 background operation is configured and the server operator confirmed that the startup service is enabled. Recovery after an actual server reboot has not yet been tested.
+
+This is an HTTP-only classroom demonstration; HTTPS is not yet configured. History and favorites are shared, and visitors can delete shared records. Do not enter sensitive information. Availability depends on the cloud server and its running service.
+
 ## Install and start independently
 
 Requires Node.js 22.13+ for the included preview server. There are no dependencies to install and no build step. From this frontend repository run:
@@ -30,9 +43,9 @@ Use port 3187 for the backend in this example. `HOST` defaults to `127.0.0.1`. V
 
 For a separate static frontend host, edit `backendApiUrl` in `scripts/config.js` to the real backend HTTPS URL, including `/api` and omitting a trailing slash. Set backend `FRONTEND_ORIGIN` to the frontend's exact origin (scheme, host and optional port, without a path).
 
-If a reverse proxy routes this site's `/api` to the backend, leave `backendApiUrl` empty. Port 4173 defaults to the local API at port 3000. When using the included server with `CALCULATOR_API_URL`, it supplies the configured URL instead of the file. This override does not apply to other static hosts.
+If the backend serves the frontend through `FRONTEND_DIR`, or a reverse proxy routes this site's `/api` to the backend, leave `backendApiUrl` empty. Port 4173 defaults to the local API at port 3000. When using the included server with `CALCULATOR_API_URL`, it supplies the configured URL instead of the file. This override does not apply to other static hosts.
 
-Upload `index.html`, `assets/`, `scripts/`, and `styles/` to the public static directory. Repository metadata, preview code, documentation and tests need not be publicly served. Keep the backend accessible and its database on persistent storage during evaluation. Public deployment has not yet been verified.
+Upload `index.html`, `assets/`, `scripts/`, and `styles/` to the public static directory. Repository metadata, preview code, documentation and tests need not be publicly served. Keep the backend accessible and its database on persistent storage during evaluation. The current public demonstration and its verification limits are described above.
 
 Database initialization is handled automatically by the backend. This client only sends expressions, displays API results, reads history and requests deletion.
 This directory is the standalone frontend repository root. It contains README.md, codestyle.md, package.json, preview tests and asset attribution in ASSETS.md. Commit source and assets; do not commit secrets or runtime files.
